@@ -1,0 +1,13 @@
+# Secrets and local config
+.env
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Deployment artifacts
+app.zip
+
+# macOS
+.DS_Store

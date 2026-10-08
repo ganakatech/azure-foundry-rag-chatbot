@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Product Assistant</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 0 auto; padding: 16px; background: #f6f7f9; }
+    h1 { font-size: 1.4rem; }
+    #chat { background: #fff; border-radius: 12px; padding: 16px; height: 65vh; overflow-y: auto; box-shadow: 0 1px 4px #0001; }
+    .msg { margin: 10px 0; padding: 10px 14px; border-radius: 10px; max-width: 85%; white-space: pre-wrap; line-height: 1.4; }
+    .user { background: #0b6cff; color: #fff; margin-left: auto; }
+    .bot  { background: #eef0f3; }
+    .sources { font-size: .8rem; color: #666; margin-top: 6px; }
+    form { display: flex; gap: 8px; margin-top: 12px; }
+    input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem; }
+    button { padding: 12px 18px; border: 0; border-radius: 8px; background: #0b6cff; color: #fff; font-size: 1rem; cursor: pointer; }
+    button:disabled { opacity: .5; }
+    header { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .who { font-size: .85rem; color: #555; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🛍️ Product Assistant</h1>
+    <div class="who">{{ user }} · <a href="/.auth/logout">Sign out</a></div>
+  </header>
+  <div id="chat"><div class="msg bot">Hi! Ask me about our products, prices, or return policy.</div></div>
+  <form id="form">
+    <input id="q" placeholder="e.g. How long does the AeroBook battery last?" autocomplete="off" required>
+    <button id="send">Send</button>
+  </form>
+
+<script>
+  const chat = document.getElementById("chat");
+  const form = document.getElementById("form");
+  const input = document.getElementById("q");
+  const send = document.getElementById("send");
+  const history = [];
+
+  function add(text, cls, sources) {
+    const div = document.createElement("div");
+    div.className = "msg " + cls;
+    div.textContent = text;                      // textContent, not innerHTML, avoids XSS
+    if (sources?.length) {
+      const s = document.createElement("div");
+      s.className = "sources";
+      s.textContent = "Sources: " + sources.join(", ");
+      div.appendChild(s);
+    }
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+    return div;
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const question = input.value.trim();
+    if (!question) return;
+    add(question, "user");
+    input.value = "";
+    send.disabled = true;
+    const thinking = add("Thinking…", "bot");
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question, history }),
+      });
+      const data = await res.json();
+      thinking.remove();
+      if (!res.ok) throw new Error(data.error || "Request failed");
+      add(data.reply, "bot", data.sources);
+      history.push({ role: "user", content: question }, { role: "assistant", content: data.reply });
+    } catch (err) {
+      thinking.remove();
+      add("⚠️ " + err.message, "bot");
+    } finally {
+      send.disabled = false;
+      input.focus();
+    }
+  });
+</script>
+</body>
+</html>

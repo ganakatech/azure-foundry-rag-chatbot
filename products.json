@@ -1,0 +1,26 @@
+[
+    {
+        "id": "1",
+        "name": "AeroBook 14 Laptop",
+        "category": "Laptops",
+        "description": "14-inch laptop, Intel Core Ultra 7, 16GB RAM, 512GB SSD, 18-hour battery, 1.2kg. Price $1,099. 2-year warranty. Ports: 2x USB-C, 1x USB-A, HDMI."
+    },
+    {
+        "id": "2",
+        "name": "PulseBuds Pro",
+        "category": "Audio",
+        "description": "Wireless earbuds with active noise cancellation, 30h total battery with case, IPX5 water resistance, Bluetooth 5.3. Price $179. 1-year warranty."
+    },
+    {
+        "id": "3",
+        "name": "HomeHub Smart Speaker",
+        "category": "Smart Home",
+        "description": "Voice-controlled speaker with Matter support, 360° sound, works with Alexa and Google Assistant. Price $99. Colors: charcoal, sand."
+    },
+    {
+        "id": "4",
+        "name": "Return Policy",
+        "category": "Policy",
+        "description": "Products can be returned within 30 days of delivery in original packaging for a full refund. Opened audio products have a 15-day window."
+    }
+]
